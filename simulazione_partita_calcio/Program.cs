@@ -203,6 +203,8 @@
             {
 
                 sq[i] = sq[i] - 2;
+
+                PotenzaSqudra(sq);
             
             }
 
