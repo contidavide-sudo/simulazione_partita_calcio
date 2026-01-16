@@ -12,7 +12,7 @@
                 Random gol = new Random();
                 sq[i] = gol.Next(0, 101);
             }
-             
+
             return sq;
         }
 
@@ -21,8 +21,8 @@
             Console.Write("Squadra 1: ");
 
             for (int i = 0; i < sq1.Length; i++)
-            {  
-                Console.Write("[" + sq1[i] + "]");    
+            {
+                Console.Write("[" + sq1[i] + "]");
             }
 
             Console.WriteLine();
@@ -40,7 +40,7 @@
 
             for (int i = 0; i < sq2.Length; i++)
             {
-                Console.Write("[" + sq2[i] + "]");              
+                Console.Write("[" + sq2[i] + "]");
             }
 
             Console.WriteLine();
@@ -55,9 +55,9 @@
 
         static int PotenzaSqudra(int[] sq) //Funzione per il calcolo della potenza totale delle squadre
         {
-            int pot=0;
+            int pot = 0;
 
-            for(int i=0; i < sq.Length; i++)
+            for (int i = 0; i < sq.Length; i++)
             {
                 pot = pot + sq[i];
             }
@@ -70,7 +70,7 @@
 
             for (int i = 0; i < sq.Length; i++)
             {
-                if(sq[i] + 5 >= 100)
+                if (sq[i] + 5 >= 100)
                 {
                     sq[i] = 100;
                 }
@@ -85,10 +85,10 @@
 
         static void CartellinoGiallo(int[] sq, int[] vettoreG) //Funzione per la assegnazione dei cartellini gialli ai giocatori
         {
-            Random rnd3 = new Random();
-            int giocatoreGiallo = rnd3.Next(0, 11);
+            Random rnd = new Random();
+            int giocatoreGiallo = rnd.Next(0, 11);
 
-            vettoreG[giocatoreGiallo] = vettoreG[giocatoreGiallo] + 1;            
+            vettoreG[giocatoreGiallo] = vettoreG[giocatoreGiallo] + 1;
 
             if (vettoreG[giocatoreGiallo] < 2)
             {
@@ -96,13 +96,15 @@
 
                 PotenzaSqudra(sq);
             }
-            else if (vettoreG[giocatoreGiallo] == 2) 
+            else if (vettoreG[giocatoreGiallo] == 2)
             {
                 Console.WriteLine();
 
                 Console.WriteLine("Un giocatore ha preso 2 cartellini gialli, qundi uno rosso ed è stato espulso(potenza=0)");//estensione di livello 1 "Ammonizioni accumulative"
 
                 Console.WriteLine();
+
+                sq[giocatoreGiallo] = 0;
             }
             else
             {
@@ -111,15 +113,15 @@
                 Console.WriteLine("Il giocatore è gia stato espulso in precedenza");
 
                 Console.WriteLine();
-            }         
-            
+            }
+
         }
 
         static int[] CartellinoRosso(int[] sq) //Funzione per l'assegnazione dei cartellini rossi ai giocatori
         {
 
-            Random rnd5 = new Random();
-            int giocatoreRosso = rnd5.Next(0, 11);
+            Random rnd = new Random();
+            int giocatoreRosso = rnd.Next(0, 11);
 
             sq[giocatoreRosso] = 0;
 
@@ -129,25 +131,27 @@
 
         }
 
-        static void Sostituzione(int[] sq, int[] panchina, int[] vettoreSos) //Funzione per la gestione delle sostituzioni
+        static void Sostituzione(int[] sq, int[] panchina, int[] vettoreSos, ref int contaSos) //Funzione per la gestione delle sostituzioni
         {
 
-            int panchinaMax = 0, titolareMin = 1000; //Estensione di livello 2 "panchina intelligente"
+            int panchinaMax = 0, titolareMin = 0, valPanchinaMax = 0, valTitolareMin = 0, varTemporanea; //Estensione di livello 2 "panchina intelligente"
 
             for (int i = 0; i < sq.Length; i++)
-            { 
-            
-                if(sq[i] < titolareMin)
+            {
+
+                if (sq[i] < valTitolareMin)
                 {
+                    valTitolareMin = sq[i];
                     titolareMin = i;
                 }
-            
+
             }
 
             for (int i = 0; i < panchina.Length; i++)
             {
-                if (panchina[i] > panchinaMax)
+                if (panchina[i] > valPanchinaMax)
                 {
+                    valPanchinaMax = panchina[i];
                     panchinaMax = i;
                 }
             }
@@ -162,25 +166,29 @@
             }
             else
             {
+                varTemporanea = sq[titolareMin];
                 sq[titolareMin] = panchina[panchinaMax];
-                panchina[panchinaMax]=sq[titolareMin];
+                panchina[panchinaMax] = varTemporanea;
 
-                vettoreSos[panchinaMax] = vettoreSos[panchinaMax] +1;
+                vettoreSos[panchinaMax] = 1;
+
+                contaSos = contaSos + 1;
 
                 Console.WriteLine();
 
                 Console.WriteLine("Viene sostituito il giocatore con potenza minore, il numero " + titolareMin);
 
                 Console.WriteLine();
+
             }
         }
 
         static int[] Infortunio(int[] sq) //Funzione per la gestione degli infortuni
         {
-            Random rnd10 = new Random();
-            int giocatoreInf = rnd10.Next(0, 11);
+            Random rnd = new Random();
+            int giocatoreInf = rnd.Next(0, 11);
 
-            if(sq[giocatoreInf] - 20 >= 0)
+            if (sq[giocatoreInf] - 20 >= 0)
             {
                 sq[giocatoreInf] = sq[giocatoreInf] - 20;
 
@@ -199,24 +207,31 @@
         static int[] CaloFisico(int[] sq) //Funzione per la gestione dei cali fisici delle squadre
         {
 
-            for (int i = 0; i < sq.Length; i++) 
+            for (int i = 0; i < sq.Length; i++)
             {
 
-                sq[i] = sq[i] - 2;
+                if (sq[i] > 2)
+                {
+                    sq[i] = sq[i] - 2;
+                }
+                else
+                {
+                    sq[i] = 0;  
+                }
 
                 PotenzaSqudra(sq);
-            
+
             }
 
             return sq;
 
         }
 
-        static void Rigore(int contaGol) //Funzione per la gestione dei rigori 
+        static void Rigore(ref int contaGol) //Funzione per la gestione dei rigori 
         {
 
-            Random rnd13 = new Random();       //Estensione livello 3 "Rigori"
-            int rigore = rnd13.Next(1, 101);
+            Random rnd = new Random();       //Estensione livello 3 "Rigori"
+            int rigore = rnd.Next(1, 101);
 
             if (rigore < 50)
             {
@@ -229,10 +244,10 @@
                 Console.WriteLine("Il rigore non è stato segnato purtroppo!!!");
             }
 
-            
+
         }
 
-        
+
         static void Main(string[] args)
         {
             //Inizializzazioni delle variabili
@@ -252,37 +267,39 @@
 
 
             int potenzaSquadra1 = PotenzaSqudra(squadra1), potenzaSquadra2 = PotenzaSqudra(squadra2), sommaPot = potenzaSquadra1 + potenzaSquadra2, contaGolSq1 = 0, contaGolSq2 = 0, contaGialli1 = 0, contaGialli2 = 0, contaSos1 = 0, contaSos2 = 0, contaRossi1 = 0, contaRossi2 = 0; ;
-            
+
             StampaSquadra(squadra1, squadra2, panchina1, panchina2);
-            
+
             Console.WriteLine();
 
-            for (int i = 0; i <= 90; i++) {  //Ciclo per lo scorrere dei minuti della partita
+            Random rnd = new Random();
+
+            for (int i = 0; i <= 90; i++) //Ciclo per lo scorrere dei minuti della partita
+            {
 
                 Console.WriteLine();
- 
-                Console.WriteLine("Minuto " +  i);
+
+                Console.WriteLine("Minuto " + i);
 
                 //Controllo dell'estrazione randomica per la scelta degli eventi che possono accadere
 
-                Random rnd = new Random();
                 int gol = rnd.Next(1, 101);
 
-                if (gol > 2 && gol <=7)  //Cartelllini gialli
+                if (gol > 2 && gol <= 7)  //Cartelllini gialli
                 {
                     Console.Write("E' stato dato un cartellino giallo alla ");
 
-                    Random rnd2 = new Random();
-                    int squadraGiallo = rnd2.Next(1, 101);
 
-                    if(squadraGiallo < 50)
+                    int squadraGiallo = rnd.Next(1, 101);
+
+                    if (squadraGiallo < 50)
                     {
                         contaGialli1 = contaGialli1 + 1;
 
                         Console.WriteLine("squadra 1, il giocatore  che ha commesso fallo verra depotenziato");
 
                         CartellinoGiallo(squadra1, gialli1);
-                        
+
                     }
                     else
                     {
@@ -295,21 +312,21 @@
                     }
 
                 }
-                else if(gol>7 && gol <= 9)//Cartellini rossi
+                else if (gol > 7 && gol <= 9)//Cartellini rossi
                 {
                     Console.Write("E' stato dato un cartellino rosso alla ");
 
-                    Random rnd4 = new Random();
-                    int squadraRosso = rnd4.Next(1, 101);
+
+                    int squadraRosso = rnd.Next(1, 101);
 
                     if (squadraRosso < 50)
                     {
-                        contaRossi1= contaRossi1 + 1;
+                        contaRossi1 = contaRossi1 + 1;
 
                         Console.WriteLine("squadra 1, il giocatore  che ha avuto un cartellino rosso verra espulso(potenza=0)");
 
                         CartellinoRosso(squadra1);
-                        
+
                     }
                     else
                     {
@@ -321,10 +338,10 @@
 
                     }
                 }
-                else if(gol<=2)//Gol di una squdra 
+                else if (gol <= 2)//Gol di una squdra 
                 {
-                    Random rnd6 = new Random();
-                    int squadraGol = rnd6.Next(1, sommaPot + 1);
+
+                    int squadraGol = rnd.Next(1, sommaPot + 1);
 
                     Console.WriteLine();
                     Console.WriteLine("GOLLL");
@@ -342,7 +359,7 @@
 
                         StampaSquadra(squadra1, squadra2, panchina1, panchina2);
 
-                        Console.WriteLine(); 
+                        Console.WriteLine();
                     }
                     else
                     {
@@ -355,17 +372,17 @@
                         PotenzaSqudra(squadra2);
 
                         Console.WriteLine();
-                        
+
                         StampaSquadra(squadra1, squadra2, panchina1, panchina2);
 
                         Console.WriteLine();
                     }
-                    
+
                 }
-                else if(gol>9 && gol <= 14)//Sostituzioni
+                else if (gol > 9 && gol <= 14)//Sostituzioni
                 {
-                    Random rnd7 = new Random();
-                    int sos = rnd7.Next(1, 101);
+
+                    int sos = rnd.Next(1, 101);
 
                     if (sos < 50)
                     {
@@ -377,13 +394,13 @@
 
                             Console.WriteLine();
 
-                            Sostituzione(squadra1, panchina1, sostituzione1);
+                            Sostituzione(squadra1, panchina1, sostituzione1, ref contaSos1);
                         }
                         else
                         {
-                            Console.WriteLine() ;
+                            Console.WriteLine();
 
-                            Console.WriteLine("La squadra 1 tenta di sostituire un giocatore ma non puo, ha finito le sostiruzioni") ;
+                            Console.WriteLine("La squadra 1 tenta di sostituire un giocatore ma non puo, ha finito le sostiruzioni");
 
                             Console.WriteLine();
                         }
@@ -398,7 +415,7 @@
 
                             Console.WriteLine();
 
-                            Sostituzione(squadra2, panchina2, sostituzione2);
+                            Sostituzione(squadra2, panchina2, sostituzione2, ref contaSos2);
                         }
                         else
                         {
@@ -411,13 +428,13 @@
                     }
 
                 }
-                else if(gol>14 && gol <= 16)//Infortuni e depotenziamento causati da essi
+                else if (gol > 14 && gol <= 16)//Infortuni e depotenziamento causati da essi
                 {
 
-                    Random rnd9 = new Random();
-                    int squadraInf = rnd9.Next(1, 101);
 
-                    if (squadraInf < 50) 
+                    int squadraInf = rnd.Next(1, 101);
+
+                    if (squadraInf < 50)
                     {
                         Console.WriteLine();
 
@@ -435,107 +452,120 @@
                     }
 
                 }
-                else if(gol>16 && gol <= 21)//Cali fisici della squadra
+                else if (gol > 16 && gol <= 21)//Cali fisici della squadra
                 {
-                    if (i >= 60)
+
+
+
+                    int squadraCalo = rnd.Next(1, 101);
+
+                    if (squadraCalo < 50)
                     {
-                        Random rnd11 = new Random();
-                        int squadraCalo = rnd11.Next(1, 101);
+                        Console.WriteLine();
 
-                        if (squadraCalo < 50)
-                        { 
-                            Console.WriteLine();
+                        Console.WriteLine("La squadra 1 ha avuto un calo fisico dovuto alla stancheza, vengono depotenziati lievemente tutti i giocatori");
 
-                            Console.WriteLine("La squadra 1 ha avuto un calo fisico dovuto alla stancheza, vengono depotenziati lievemente tutti i giocatori");
+                        Console.WriteLine();
 
-                            Console.WriteLine();
-
-                            CaloFisico(squadra1);
-                        }
-                        else
-                        {
-                            Console.WriteLine();
-
-                            Console.WriteLine("La squadra 2 ha avuto un calo fisico dovuto alla stancheza, vengono depotenziati lievemente tutti i giocatori");
-
-                            Console.WriteLine();
-
-                            CaloFisico(squadra2);
-                        }
-
+                        CaloFisico(squadra1);
                     }
-                    else if(gol > 21 && gol <= 23)//Rigori (estensione livello 3)
+                    else
                     {
-                        Random rnd12 = new Random();
-                        int squadraRig = rnd12.Next(1, 101);
+                        Console.WriteLine();
 
-                        if(squadraRig < 50)
-                        {
-                            Console.WriteLine("La squadra 1 deve battere un rigore");
+                        Console.WriteLine("La squadra 2 ha avuto un calo fisico dovuto alla stancheza, vengono depotenziati lievemente tutti i giocatori");
 
-                            Rigore(contaGolSq1);
-                        }
-                        else
-                        {
-                            Console.WriteLine("La squadra 2 deve battere un rigore");
+                        Console.WriteLine();
 
-                            Rigore(contaGolSq2);
-                        }
-                    }
-                    else//Non succede nulla nel minuto di partita
-                    {
-                        Console.WriteLine("Non è successo nulla");
+                        CaloFisico(squadra2);
                     }
                 }
-                else
+                else if (gol > 21 && gol <= 23)//Rigori (estensione livello 3)
+                {
+
+                    int squadraRig = rnd.Next(1, 101);
+
+                    if (squadraRig < 50)
+                    {
+                        Console.WriteLine("La squadra 1 deve battere un rigore");
+
+                        Rigore(ref contaGolSq1);
+                    }
+                    else
+                    {
+                        Console.WriteLine("La squadra 2 deve battere un rigore");
+
+                        Rigore(ref contaGolSq2);
+                    }
+                }
+                else//Non succede nulla nel minuto di partita
                 {
                     Console.WriteLine("Non è successo nulla");
                 }
-            
+
             }
 
             //Risultati finali con statistiche finali
-
+             
             if (contaGolSq1 < contaGolSq2)
             {
                 Console.WriteLine();
+                Console.WriteLine("---------------------------------------------------------------------");
                 Console.WriteLine("HA VINTO LA SQUDRA 2");
+                Console.WriteLine("---------------------------------------------------------------------");
                 Console.WriteLine();
 
+                Console.WriteLine("STATISTICHE");
+                Console.WriteLine("---------------------------------------------------------------------");
                 Console.WriteLine("Gol squdra 1: " + contaGolSq1);
                 Console.WriteLine("Gol squdra 2: " + contaGolSq2);
                 Console.WriteLine("cartellini gialli squdra 1: " + contaGialli1);
                 Console.WriteLine("cartellini gialli squdra 2: " + contaGialli2);
                 Console.WriteLine("cartellini Rossi squdra 1: " + contaRossi1);
                 Console.WriteLine("cartellini Rossi squdra 2: " + contaRossi2);
+                Console.WriteLine("---------------------------------------------------------------------");
+
             }
-            else if(contaGolSq1 > contaGolSq2)
+            else if (contaGolSq1 > contaGolSq2)
             {
                 Console.WriteLine();
+                Console.WriteLine("---------------------------------------------------------------------");
                 Console.WriteLine("HA VINTO LA SQUDRA 1");
+                Console.WriteLine("---------------------------------------------------------------------");
                 Console.WriteLine();
 
+                Console.WriteLine("STATISTICHE");
+                Console.WriteLine("---------------------------------------------------------------------");
                 Console.WriteLine("Gol squdra 1: " + contaGolSq1);
                 Console.WriteLine("Gol squdra 2: " + contaGolSq2);
                 Console.WriteLine("cartellini gialli squdra 1: " + contaGialli1);
                 Console.WriteLine("cartellini gialli squdra 2: " + contaGialli2);
                 Console.WriteLine("cartellini Rossi squdra 1: " + contaRossi1);
                 Console.WriteLine("cartellini Rossi squdra 2: " + contaRossi2);
+                Console.WriteLine("---------------------------------------------------------------------");
+
             }
             else
             {
                 Console.WriteLine();
+                Console.WriteLine("---------------------------------------------------------------------");
                 Console.WriteLine("PAREGGIO");
+                Console.WriteLine("---------------------------------------------------------------------");
                 Console.WriteLine();
 
+                Console.WriteLine("STATISTICHE");
+                Console.WriteLine("---------------------------------------------------------------------");
                 Console.WriteLine("Gol squdra 1: " + contaGolSq1);
                 Console.WriteLine("Gol squdra 2: " + contaGolSq2);
                 Console.WriteLine("cartellini gialli squdra 1: " + contaGialli1);
                 Console.WriteLine("cartellini gialli squdra 2: " + contaGialli2);
                 Console.WriteLine("cartellini Rossi squdra 1: " + contaRossi1);
                 Console.WriteLine("cartellini Rossi squdra 2: " + contaRossi2);
+                Console.WriteLine("---------------------------------------------------------------------");
+
             }
 
         }
     }
+    
 }
